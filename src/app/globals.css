@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  This file is intentionally minimal. It exists only for two things Tailwind
+  utility classes cannot express: @font-face declarations and the html/body
+  base reset. All component and page styling lives in Tailwind classes.
+
+  Northline ships with system-font fallbacks by default so the project builds
+  without a network font fetch. To use the licensed condensed display face +
+  serif editorial face from the brand direction, drop the font files into
+  /public/fonts and uncomment the @font-face blocks below, then reference
+  them from tailwind.config.ts (fontFamily.display / fontFamily.editorial).
+*/
+
+/*
+@font-face {
+  font-family: "Northline Display";
+  font-weight: 400 700;
+  src: url("/fonts/northline-display.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Northline Editorial";
+  font-weight: 300 700;
+  src: url("/fonts/northline-editorial.woff2") format("woff2");
+  font-display: swap;
+}
+*/
+
+html,
+body {
+  @apply h-full w-full bg-graphite text-sand;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/WebKit */
+}
+
+* {
+  @apply m-0 box-border p-0;
+}
