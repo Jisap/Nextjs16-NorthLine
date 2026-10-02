@@ -281,34 +281,162 @@ export default function Menu() {
     setIsOpen(false);
   };
 
+  // Función de Orden Superior (Higher-Order Function) -> Básicamente, es una función que devuelve otra función
+  // Primera función recibe el href de la ruta a la que queremos navegar
+  // Segunda función recibe el evento de click y ejecuta la navegación
+  // Esto se hace para sincronizar Estado y animación, evitar condiciones de carrera y gestionar el foco del naegador.
+  const handleNavigation = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setTimeout(() => router.push(href), 0);
+  }
+
+  /**
+ * Callback Ref para recolectar múltiples elementos DOM en un array.
+ * 
+ * En React, no puedes usar useRef() dentro de un .map() o bucle,
+ * porque los hooks deben llamarse siempre en el mismo orden y cantidad.
+ * Este patrón (Callback Ref) es la solución oficial de React para
+ * almacenar referencias a una lista dinámica de elementos.
+ * 
+ * @param {HTMLDivElement | null} el - El elemento DOM que React pasa 
+ *   automáticamente cuando el componente se monta (o null cuando se desmonta).
+ */
+  const addToColsRef = (el: HTMLDivElement | null) => {
+    // 1. CLÁUSULA DE GUARDA
+    // 'el' será null cuando el componente se desmonte (React llama al callback 
+    // con null para indicar que el elemento ya no existe en el DOM).
+    // También verificamos que el elemento no esté ya en el array para evitar 
+    // duplicados en caso de re-renders.
+    if (el && !menuColsRef.current.includes(el)) {
+      // 2. AGREGAR AL ARRAY DE REFS
+      // Añade el elemento al array almacenado en la ref.
+      // Este array es el que luego pasas a GSAP para animar con 'stagger'.
+      menuColsRef.current.push(el);
+    }
+  }
+
+  const addToItemsRef = (el: HTMLDivElement | null) => {
+    if (el && !menuItemRef.current.includes(el)) {
+      menuItemRef.current.push(el);
+    }
+  }
+
   return (
     <div className="absolute left-0 top-0 h-screen w-screen">
-      <div className="fixed left-0 top-0 z-menu-bar flex w-screen items-center justify-between px-4 py-2">
-        <Link href="/" className="text-rust">
+      <div
+        ref={topBarRef}
+        className="fixed left-0 top-0 z-menu-bar flex w-screen items-center justify-between px-4 py-2 will-change-transform"
+      >
+        <Link href="/" onClick={handleNavigation("/")} className="text-rust">
           <WaveMark className="w-[50px] pt-3" />
         </Link>
 
-        <div onClick={handleMenuOpen} className="cursor-pointer font-display text-[48px] uppercase text-rust">
-          <p>Menu</p>
+        <div
+          onClick={handleMenuOpen}
+          aria-expanded={isOpen}
+          className="cursor-pointer font-display text-[48px] uppercase text-rust"
+        >
+          <p>
+            Menu
+          </p>
         </div>
-      </div>
 
-      {/* TODO: full-screen overlay, hidden until opened. Two columns: a
-          background/pattern column, and a rust column with the close
-          button, nav items below, and a small footer block. */}
-      <div className="pointer-events-none fixed left-0 top-0 z-menu-overlay hidden h-screen w-screen">
-        <div className="relative flex h-full w-full flex-col items-center justify-center gap-1">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="font-display text-[80px] uppercase text-graphite"
+        <div
+          ref={menuOverlayRef}
+          aria-hidden={!isOpen}
+          className="pointer-events-none fixed left-0 top-0 z-menu-overlay flex h-screen w-screen"
+        >
+          <div
+            ref={addToColsRef}
+            className="relative h-full w-full flex-1 overflow-hidden bg-graphite [clip-path:polygon(0%_0%,100%_0%,100%_0%,0%_0%)
+              will-change-[clip-path] mobile:hidden"
+          >
+            <div
+              ref={menuBgRef}
+              className="absolute left-0 top-0 h-full w-full origin-center scale-150 opacity-0 will-change-[transform,opacity]"
             >
-              {item.label}
-            </Link>
-          ))}
+              <div className="flex h-full w-full items-center justify-center bg-graphite">
+                <WaveMark className="w-1/3 text-rust/40" />
+              </div>
+            </div>
+
+            <div
+              ref={menuPatternRef}
+              className="absolute left-0 top-0 h-full w-full bg-[repeating-linear-gradient(135deg,theme(colors.rust)_0px,theme(color.rust)_2px,transparent_2px,transparent_18px)]
+              opacity-20 [clip-path:polygon(0%_0%,0%_0%,0%_100%,0%_100%)] will-change-[clip-path]"
+            />
+          </div>
+
+          <div
+            ref={addToColsRef}
+            className="relative h-full w-full flex-1 overflow-hidden bg-rust [clip-path:polygon(0%_0%,100%_0%,100%_0%,0%_0%)]
+            will-change-[clip-path]"
+          >
+            <div
+              ref={menuCloseRef}
+              onClick={handleMenuClose}
+              className="absolute right-4 top-2 z-menu-bar cursor-pointer opacity-0 will-change-[opacity]"
+            >
+              <p className="font-display text-[48px] uppercase text-graphite">
+                Close
+              </p>
+            </div>
+
+            <div className="relative flex h-full w-full flex-col items-center justify-center gap-1">
+              {NAV_ITEMS.map((item) => (
+                <div
+                  key={item.href}
+                  ref={addToItemsRef}
+                  className="relative h-[100px] opacity-0 [clip-path:polygon(0%_0%,100%_0%,100%_100%,0%_100%)] will-change-[opacity]"
+                >
+                  <p className="relative h-0 leading-[130px]">
+                    <Link
+                      href={item.href}
+                      onClick={handleNavigation(item.href)}
+                      className="relative top-[-20px] inline-block cursor-pointer font-display text-[130px] uppercase leding-[120px] text-graphite"
+                    >
+                      {item.label}
+                    </Link>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  );
-}
+  )
+};
+
+
+//   return (
+//     <div className="absolute left-0 top-0 h-screen w-screen">
+//       <div className="fixed left-0 top-0 z-menu-bar flex w-screen items-center justify-between px-4 py-2">
+//         <Link href="/" className="text-rust">
+//           <WaveMark className="w-[50px] pt-3" />
+//         </Link>
+
+//         <div onClick={handleMenuOpen} className="cursor-pointer font-display text-[48px] uppercase text-rust">
+//           <p>Menu</p>
+//         </div>
+//       </div>
+
+//       {/* TODO: full-screen overlay, hidden until opened. Two columns: a
+//           background/pattern column, and a rust column with the close
+//           button, nav items below, and a small footer block. */}
+//       <div className="pointer-events-none fixed left-0 top-0 z-menu-overlay hidden h-screen w-screen">
+//         <div className="relative flex h-full w-full flex-col items-center justify-center gap-1">
+//           {NAV_ITEMS.map((item) => (
+//             <Link
+//               key={item.href}
+//               href={item.href}
+//               className="font-display text-[80px] uppercase text-graphite"
+//             >
+//               {item.label}
+//             </Link>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
