@@ -1,6 +1,12 @@
 "use client";
 
+import gsap from "gsap";
+import { useLenis } from "lenis/react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+
 
 const NAV_ITEMS = [
   { label: "About Us", href: "/about" },
@@ -25,17 +31,78 @@ function WaveMark({ className }: { className?: string }) {
 }
 
 export default function Menu() {
-  // TODO: state for isOpen / isAnimating.
-  // TODO: refs for the two overlay columns, the background wave layer, the
-  // diagonal pattern layer, the close button, each nav item, the footer
-  // block, and the fixed top bar.
-  // TODO: GSAP open/close timelines animating clip-path on the overlay
-  // columns + pattern layer, opacity on the nav items/close/footer, and
-  // xPercent/opacity on the background layer.
-  // TODO: useLenis subscription that hides the fixed top bar
-  // (yPercent: -100) on scroll down past a threshold, and reveals it
-  // (yPercent: 0) on scroll up.
-  // TODO: reset all of the above on route change (usePathname effect).
+  const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const menuColsRef = useRef<HTMLDivElement[]>([]);
+  const menuOverlayRef = useRef<HTMLDivElement | null>(null);
+  const menuItemRef = useRef<HTMLDivElement[]>([]);
+  const menuCloseRef = useRef<HTMLDivElement | null>(null);
+  const menuFooterRef = useRef<HTMLDivElement | null>(null);
+  const menuBgRef = useRef<HTMLDivElement | null>(null);
+  const menuPatternRef = useRef<HTMLDivElement | null>(null);
+  const topBarRef = useRef<HTMLDivElement | null>(null);
+  const lastScrollRef = useRef(0);
+  const barHiddenRef = useRef(false);
+  const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);  // Guarda el ID del timeout usado para el menú overlay
+  const router = useRouter();
+  const pathName = usePathname();
+
+  // ── 1. Ocultar/mostrar la barra superior según la dirección del scroll ──
+  useLenis(({ scroll }: { scroll: number }) => {
+    if (!topBarRef.current) return;                                                 // Salir si no existe la ref (no está renderizado)
+    const delta = scroll - lastScrollRef.current;                                   // Diferencia con el scroll del frame anterior: >0 = bajando, <0 = subiendo
+    const scrollingDown = delta > 0;                                                // Comprueba si el usuario está bajando
+    const pastThreshold = scroll > 120;                                             // Evita ocultar la barra mientras estamos cerca del inicio de la página
+
+    if (scrollingDown && pastThreshold && !barHiddenRef.current) {                  // Bajando, pasado el umbral y la barra visible → ocultar 
+      barHiddenRef.current = true;                                                  // Actualiza la referencia para que el siguiente frame se oculte
+      gsap.to(topBarRef.current, {                                                  // Para ello usamos GSAP y su método to para animar el translateY
+        yPercent: -100,                                                             // sale por arriba
+        duration: 0.5,                                                              // 0.5 segundos
+        ease: "power2.inOut",                                                       // curva de aceleración
+      });
+    } else if ((!scrollingDown || !pastThreshold) && barHiddenRef.current) {        // Subiendo o de vuelta cerca del inicio, y la barra oculta → mostrar      
+      barHiddenRef.current = false;                                                 // Actualiza la referencia para que el siguiente frame se muestre
+      gsap.to(topBarRef.current, {                                                  // Para ello usamos GSAP y su método to para animar el translateY
+        yPercent: 0,                                                                // vuelve a su posición original
+        duration: 0.5,                                                              // 0.5 segundos
+        ease: "power2.inOut",                                                       // curva de aceleración
+      });
+    }
+
+    lastScrollRef.current = scroll;                                                 // Guardamos la posición para calcular el delta en el siguiente frame
+  });
+
+  // ── 2. Resetear el menú overlay cuando cambia la ruta ──
+  useEffect(() => {
+    if (navigationTimeoutRef.current) {                                             // Evita timeouts duplicados si la ruta cambia varias veces seguidas
+      clearTimeout(navigationTimeoutRef.current);                                   // Limpia el timeout anterior
+    }
+
+    navigationTimeoutRef.current = setTimeout(() => {                               // setTimeout 0: espera a que termine el ciclo de render de la nueva ruta 
+      gsap.set(menuColsRef.current, {                                               // Colapsa las columnas del menú en una línea superior (menú "cerrado")
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+      });
+
+      gsap.set(menuOverlayRef.current, { pointerEvents: "none" });                  // El overlay deja de capturar clics
+
+      gsap.set(
+        [menuCloseRef.current, ...menuItemRef.current, menuFooterRef.current],      // Oculta botón de cerrar, ítems y footer del menú
+        { opacity: 0 }
+      );
+    }, 0);
+
+
+    return () => {
+      if (navigationTimeoutRef.current) {                                           // Limpieza al desmontar o antes de la siguiente ejecución del efecto
+        clearTimeout(navigationTimeoutRef.current);
+      }
+    };
+  }, [pathName]);
+
+
+
+  const lenis = useLenis((lenis) => { });
 
   const handleMenuOpen = () => {
     // TODO
