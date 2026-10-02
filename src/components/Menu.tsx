@@ -117,15 +117,168 @@ export default function Menu() {
 
 
 
-
   const handleMenuOpen = () => {
-    // TODO
+    // 1. CLÁUSULA DE GUARDA (Guard Clause)
+    // Evita que se dispare la animación si ya está en progreso. 
+    // Previene glitches visuales, reinicios de timeline y corrupción de estado por clics rápidos.
+    if (isAnimating) return;
+
+    // 2. BLOQUEO DE ESTADO
+    // Marca que la animación ha comenzado. Esto deshabilita botones de apertura/cierre 
+    // hasta que la secuencia termine por completo.
+    setIsAnimating(true);
+
+    // 3. CREACIÓN DE LA LÍNEA DE TIEMPO (Timeline)
+    // Se usa un timeline para orquestar múltiples animaciones de forma secuencial y superpuesta.
+    // 'onComplete' libera el bloqueo de animación solo cuando TODA la secuencia ha finalizado.
+    const timeline = gsap.timeline({
+      onComplete: () => setIsAnimating(false)
+    });
+
+    timeline
+      // PASO A: Expansión de las columnas del menú
+      // Anima el clip-path de 0% de altura (línea superior) a 100% (pantalla completa).
+      // 'stagger: 0.125' crea un efecto cascada premium entre las columnas.
+      // 'power4.inOut' ofrece una aceleración y desaceleración muy suave y cinematográfica.
+      .to(menuColsRef.current, {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+        duration: 1,
+        stagger: 0.125,
+        ease: "power4.inOut",
+      })
+
+      // PASO B: Habilitación de interacción del overlay
+      // 'set' es instantáneo (duración 0). Se ejecuta al terminar el Paso A.
+      // Permite que el usuario pueda hacer clic en el overlay (ej. para cerrar el menú) 
+      // una vez que las columnas ya se han expandido visualmente.
+      .set(menuOverlayRef.current, { pointerEvents: "all" })
+
+      // PASO C: Aparición del fondo del menú
+      // Mueve el fondo a su posición original (xPercent: 0) y lo hace opaco.
+      // "-=0.5": Comienza 0.5 segundos ANTES de que termine el Paso B (solapamiento).
+      .to(
+        menuBgRef.current,
+        {
+          xPercent: 0, // ⚠️ Nota: GSAP es sensible a mayúsculas. Usa 'xPercent' en lugar de 'xpercent'
+          opacity: 1,
+          duration: 1.5,
+          ease: "power3.out"
+        },
+        "-=0.5"
+      )
+
+      // PASO D: Expansión del patrón diagonal
+      // Anima el clip-path del patrón para que ocupe toda la pantalla.
+      // "-=2": Comienza 2 segundos antes del final de la animación anterior. 
+      // Como la anterior dura 1.5s, esto significa que en realidad comienza 0.5s 
+      // DESPUÉS del inicio del timeline, solapándose con la expansión de las columnas.
+      .to(
+        menuPatternRef.current,
+        {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+          duration: 1,
+          ease: "power4.out"
+        },
+        "-=2"
+      )
+
+      // PASO E: Revelado del contenido interno (botón cerrar, ítems, footer)
+      // Hace fade-in de los elementos interactivos del menú.
+      // 'stagger: 0.0075' es un valor muy bajo, creando un efecto de aparición casi 
+      // simultáneo pero con un micro-desfase que el ojo percibe como "orgánico" y fluido.
+      // "-=1.5": Comienza al mismo tiempo que el Paso C (aparición del fondo).
+      .to(
+        [menuCloseRef.current, ...menuItemRef.current, menuFooterRef.current],
+        {
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.0075,
+          ease: "power2.inOut"
+        },
+        "-=1.5"
+      );
+
+    // 4. ACTUALIZACIÓN DEL ESTADO LÓGICO DE REACT
+    // Se ejecuta de forma SÍNCRONA (no espera a la animación).
+    // Esto es una buena práctica de accesibilidad (a11y): los lectores de pantalla 
+    // y la lógica de la app saben inmediatamente que el menú está "abierto", 
+    // aunque visualmente la animación tarde 1.5s en completarse.
+    setIsOpen(true);
   };
 
-  // TODO: wire this up to the close button inside the overlay.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleMenuClose = () => {
-    // TODO
+    // 1. CLÁUSULA DE GUARDA (Guard Clause)
+    // Evita que se reinicie o superponga la animación de cierre si ya está en progreso.
+    if (isAnimating) return;
+
+    // 2. BLOQUEO DE ESTADO
+    // Bloquea nuevas interacciones hasta que la secuencia de cierre finalice.
+    setIsAnimating(true);
+
+    // 3. CREACIÓN DE LA LÍNEA DE TIEMPO (Timeline)
+    // Orquesta la secuencia de salida. 'onComplete' libera el bloqueo al finalizar.
+    const timeline = gsap.timeline({
+      onComplete: () => setIsAnimating(false)
+    });
+
+    timeline
+      // PASO A: Desvanecimiento del contenido interno
+      // Oculta el botón de cerrar, los ítems y el footer.
+      // 'ease: "power2.in"' acelera la salida, dando sensación de caída o cierre rápido.
+      .to(
+        [menuCloseRef.current, ...menuItemRef.current, menuFooterRef.current],
+        { opacity: 0, duration: 0.5, stagger: 0.075, ease: "power2.in" }
+      )
+
+      // PASO B: Desactivación de interacción del overlay
+      // 'set' es instantáneo. Se ejecuta justo después de que el contenido comienza a desaparecer.
+      // Previene clics accidentales en el menú mientras se está cerrando.
+      .set(menuOverlayRef.current, { pointerEvents: "none" })
+
+      // PASO C: Colapso del patrón diagonal
+      // Reduce el clip-path a una línea vertical invisible en el lado izquierdo (ancho 0%).
+      .to(
+        menuPatternRef.current,
+        {
+          clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)",
+          duration: 1,
+          ease: "power2.inOut"
+        }
+      )
+
+      // PASO D: Animación de salida del fondo
+      // Desplaza el fondo a la izquierda y lo desvanece suavemente.
+      // "-=0.5": Comienza 0.5s antes de que termine el Paso C.
+      .to(
+        menuBgRef.current,
+        {
+          xPercent: -10,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power3.in"
+        },
+        "-=0.5"
+      )
+
+      // PASO E: Colapso de las columnas del menú
+      // Reduce el clip-path a una línea horizontal superior (altura 0%), cerrando el menú visualmente.
+      // "-=0.8": Comienza 0.8s antes de que termine la animación anterior (Paso D).
+      .to(
+        menuColsRef.current,
+        {
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
+          duration: 1,
+          stagger: 0.125,
+          ease: "power4.inOut"
+        },
+        "-=0.8"
+      );
+
+    // 4. ACTUALIZACIÓN DEL ESTADO LÓGICO DE REACT
+    // Sincrónico. Informa inmediatamente a React y a las herramientas de accesibilidad 
+    // (lectores de pantalla, atributos aria) que el menú está cerrado, sin esperar a que 
+    // termine la animación visual de 2+ segundos.
+    setIsOpen(false);
   };
 
   return (
