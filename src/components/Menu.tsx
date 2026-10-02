@@ -55,7 +55,7 @@ export default function Menu() {
     const pastThreshold = scroll > 120;                                             // Evita ocultar la barra mientras estamos cerca del inicio de la página
 
     if (scrollingDown && pastThreshold && !barHiddenRef.current) {                  // Bajando, pasado el umbral y la barra visible → ocultar 
-      barHiddenRef.current = true;                                                  // Actualiza la referencia para que el siguiente frame se oculte
+      barHiddenRef.current = true;                                                  // Marca la barra como oculta para no re-lanzar la animación mientras se sigue bajando
       gsap.to(topBarRef.current, {                                                  // Para ello usamos GSAP y su método to para animar el translateY
         yPercent: -100,                                                             // sale por arriba
         duration: 0.5,                                                              // 0.5 segundos
@@ -74,23 +74,37 @@ export default function Menu() {
   });
 
   // ── 2. Resetear el menú overlay cuando cambia la ruta ──
+  // Su objetivo es garantizar que, al navegar a una nueva página,
+  // el menú overlay (que podría estar abierto o a medio animar) 
+  // se cierre limpiamente y el estado global se reinicie.
   useEffect(() => {
     if (navigationTimeoutRef.current) {                                             // Evita timeouts duplicados si la ruta cambia varias veces seguidas
       clearTimeout(navigationTimeoutRef.current);                                   // Limpia el timeout anterior
     }
 
-    navigationTimeoutRef.current = setTimeout(() => {                               // setTimeout 0: espera a que termine el ciclo de render de la nueva ruta 
-      gsap.set(menuColsRef.current, {                                               // Colapsa las columnas del menú en una línea superior (menú "cerrado")
+    navigationTimeoutRef.current = setTimeout(() => {                               // Espera 750ms a que termine la transición de página antes de resetear las posiciones del menú
+      gsap.set(menuColsRef.current, {                                               // 1º Colapsa las columnas del menú en una línea superior (menú "cerrado")
         clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)",
       });
 
-      gsap.set(menuOverlayRef.current, { pointerEvents: "none" });                  // El overlay deja de capturar clics
+      gsap.set(menuOverlayRef.current, { pointerEvents: "none" });                  // 2º El overlay deja de capturar clics
 
       gsap.set(
-        [menuCloseRef.current, ...menuItemRef.current, menuFooterRef.current],      // Oculta botón de cerrar, ítems y footer del menú
+        [menuCloseRef.current, ...menuItemRef.current, menuFooterRef.current],      // 3º Oculta botón de cerrar, ítems y footer del menú
         { opacity: 0 }
       );
-    }, 0);
+
+      gsap.set(menuBgRef.current, { xPercent: -10, opacity: 0 });                   // 4º Resetea el fondo: lo desplaza a la izquierda y lo vuelve transparente
+      gsap.set(menuPatternRef.current, {                                            // 5º Colapsa la capa del patrón diagonal a una línea vertical invisible (ancho 0)
+        clipPath: "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)"
+      });
+
+      gsap.set(topBarRef.current, { yPercent: 0 });                                 // 6º Restaura la barra superior a su posición original visible
+      barHiddenRef.current = false;                                                 // 7º Sincroniza la ref: la barra ya no está oculta
+      lastScrollRef.current = 0;                                                    // 8º Reinicia el contador de scroll para la nueva página
+      setIsOpen(false);                                                             // 9º Actualiza el estado de React confirmando que el menú está cerrado
+
+    }, 750);
 
 
     return () => {
@@ -102,7 +116,7 @@ export default function Menu() {
 
 
 
-  const lenis = useLenis((lenis) => { });
+
 
   const handleMenuOpen = () => {
     // TODO
