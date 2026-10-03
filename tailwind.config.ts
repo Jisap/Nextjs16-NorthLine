@@ -18,10 +18,7 @@ const config: Config = {
         rust: "#e2571c",
       },
       fontFamily: {
-        // Swap these for the licensed condensed display / serif editorial
-        // faces described in the brand direction once font files are added
-        // (see src/app/globals.css for the @font-face placeholders).
-        display: ["Impact", "Haettenschweiler", "Arial Narrow Bold", "sans-serif"],
+        display: ['"Northline"', '"Northline Display"', "Impact", "Haettenschweiler", "Arial Narrow Bold", "sans-serif"],
         editorial: ["Georgia", "Cambria", "Times New Roman", "serif"],
       },
       fontSize: {

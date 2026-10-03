@@ -14,32 +14,39 @@
   them from tailwind.config.ts (fontFamily.display / fontFamily.editorial).
 */
 
-/*
-@font-face {
-  font-family: "Northline Display";
-  font-weight: 400 700;
-  src: url("/fonts/northline-display.woff2") format("woff2");
+/* @font-face {
+  font-family: "Northline";
+  font-weight: 100 900;
+  src:
+    url("/fonts/Northline.woff2") format("woff2"),
+    url("/fonts/Northline.woff") format("woff"),
+    url("/fonts/Northline.ttf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Northline Editorial";
-  font-weight: 300 700;
-  src: url("/fonts/northline-editorial.woff2") format("woff2");
+  font-family: "Northline Display";
+  font-weight: 100 900;
+  src:
+    url("/fonts/Northline.woff2") format("woff2"),
+    url("/fonts/Northline.woff") format("woff"),
+    url("/fonts/Northline.ttf") format("truetype");
   font-display: swap;
-}
-*/
+} */
 
 html,
 body {
   @apply h-full w-full bg-graphite text-sand;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge legacy */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge legacy */
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/WebKit */
+  display: none;
+  /* Chrome/Safari/WebKit */
 }
 
 * {
