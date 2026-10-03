@@ -36,7 +36,7 @@ export default function HomeView() {
 
   return (
     <div>
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="relative h-screen w-full overflow-hidden">
         <ParallaxImage src="/home/hero.jpg" alt="" />
         {/* headline, tagline, CTA button, news blurb */}
@@ -85,7 +85,26 @@ export default function HomeView() {
         </div>
 
         <div className="flex-1">
-          {/* TODO: heading + body copy */}
+          <p className="text-sand/70">
+            Field recording used to mean choosing between fragile studio gear and gear that couldn&rsquot;t capture what you needed.
+          </p>
+
+          <h2 className="mt-6 font-display text-display-2 uppercase text-sand mobile:text-[20vw]">
+            Built for
+            <br />
+            Weather
+          </h2>
+
+          <h3 className="mt-4 font-display text-display-3 uppercase text-sand mobile:text-[10vw]">
+            Precision that survives the trip out there.
+          </h3>
+
+          <p className="mt-6 text-sand/70">
+            We design recorders and spatial-capture software for people who work outside a studio &mdash; researches, sound designers,
+            and field crews who need gear that keeps up with the terrain. Every Northline product is built to the same standard: capture
+            real soun, without compromise, in conditions that would kill most studio equipment.
+          </p>
+
           <div className="mt-6 h-64 w-full overflow-hidden">
             <ParallaxImage src="/home/site-intro.jpg" alt="" />
           </div>
@@ -97,7 +116,36 @@ export default function HomeView() {
         <div className="h-96 flex-1 overflow-hidden md:h-auto">
           <ParallaxImage src="/home/cover.jpg" alt="" />
         </div>
-        <div className="flex-1">{/* TODO: heading + body + CTA */}</div>
+
+        <div className="flex-1">
+          <h3 className="font-display text-display-3 uppercase text-sand mobile:text-[10vw]">
+            Commited to
+          </h3>
+
+          <h2 className="font-display text-display-2 uppercase text-rust mobile:text-[20vw]">
+            Durable Design
+          </h2>
+
+          <p className="mt-6 text-sand/70">
+            We design recorders and spatial-capture software for people who work outside a studio &mdash;
+            researches, sound designers, adn field crews who need gear that keeps up with the terrain.
+            Every Northline product is built to the same standart:  capture de real sound, without
+            compromise, in conditions thar would kill most studio equipment.
+          </p>
+
+          <p className="mt-6 text-sand/70">
+            We work with acouticians, hardware engineers, and the field crews who use our gear every
+            day to keep raising that bar.
+          </p>
+
+          <div className="mt-8">
+            <button className="!bg-rust px-6 py-3">
+              <Link href="/about" className="font-display uppercase text-graphite">
+                Our Mission
+              </Link>
+            </button>
+          </div>
+        </div>
       </section>
 
       {/* Mix-tape marquee strip (ScrollTrigger-driven) */}
