@@ -115,7 +115,10 @@ export default function SamplePlayer() {
       />
 
       {/* Escenario 3D: la perspectiva crea la profundidad del giro. */}
-      <div className="mx-auto mb-6 aspect-square w-[70%]" style={{ perspective: "1000px" }}>
+      <div
+        className="mx-auto mb-6 aspect-square w-[70%]"
+        style={{ perspective: "1000px" }}
+      >
         {/* Disco animado por GSAP. preserve-3d mantiene front/back en el espacio 3D. */}
         <div
           ref={diskRef}
@@ -149,20 +152,20 @@ export default function SamplePlayer() {
         </div>
       </div>
 
-      {/* Título y origen de la pista activa. */}
+      {/* Título y origen de la pista activa. Tema claro: grafito sobre arena. */}
       <div className="mb-5 text-center">
-        <h2 className="text-sand text-2xl font-bold">{current.title}</h2>
-        <p className="text-sand/70 text-sm">{current.location}</p>
+        <h2 className="text-graphite text-2xl font-bold">{current.title}</h2>
+        <p className="text-graphite/70 text-sm">{current.location}</p>
       </div>
 
       {/* Controles: prev / play-pause / next. Prev/next se bloquean con isFlipping. */}
       <div className="flex items-center justify-center gap-6">
-        {/* Prev: icono con línea + triángulo relleno, trazo currentColor para heredar text-sand. */}
+        {/* Prev: icono con línea + triángulo relleno, trazo currentColor para heredar text-graphite. */}
         <button
           onClick={() => handleFlip("prev")}
           aria-label="Previous Sample"
           disabled={isFlipping}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-sand/30 text-sand hover:border-rust hover:text-rust transition-colors disabled:opacity-40"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-graphite/30 text-graphite hover:border-rust hover:text-rust transition-colors disabled:opacity-40"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="5" y1="5" x2="5" y2="19" />
@@ -194,7 +197,7 @@ export default function SamplePlayer() {
           onClick={() => handleFlip("next")}
           aria-label="Next Sample"
           disabled={isFlipping}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-sand/30 text-sand hover:border-rust hover:text-rust transition-colors disabled:opacity-40"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-graphite/30 text-graphite hover:border-rust hover:text-rust transition-colors disabled:opacity-40"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="5 4 15 12 5 20 5 4" fill="currentColor" />
