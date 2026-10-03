@@ -61,7 +61,7 @@ export default function HomeView() {
             Field Kits Sell Out: Restock Ahead?
           </p>
 
-          <div className="mt-2 flex gap-4 text-sand/70">
+          <div className="mt-8 flex gap-4 text-sand/70">
             <p>7.1.2026</p>
             <p>News</p>
           </div>
@@ -150,18 +150,87 @@ export default function HomeView() {
 
       {/* Mix-tape marquee strip (ScrollTrigger-driven) */}
       <section className="mix-tape relative overflow-hidden bg-rust px-8 py-24 text-graphite">
-        {/* TODO: heading */}
+        <p className="font-display uppercase">Field-Tested, Not Lab-Tested</p>
+
+        <p className="font-display uppercase">Northline</p>
+
+        <h1 className="mt-4 font-display text-display-1 uppercase mobile:text-[24vw]">
+          From Prototype
+          <br />
+          to Field-Ready
+        </h1>
+
         <div className="relative mt-12 overflow-hidden">
           <div className="strip flex gap-8 whitespace-nowrap">
-            {/* TODO: marquee content */}
+            <p className="font-display text-5xl uppercase">
+              Northline &middot; Built for the Field &middot; Northline &middot; Built for the Field &middot; Northline &middot; Built for the Field
+            </p>
           </div>
         </div>
-        {/* TODO: supporting copy */}
+
+        <div className="mt-12 max-w-2xl">
+          <p>
+            The next generation of acoustic engineers and field recordists is shaping
+            the tools that will define outdoor audio work.
+          </p>
+
+          <p className="mt-6">
+            Northline partners with university acoustics and engineering programs to test
+            new hardware in real conditions, adn offers residencies for recordists and engineers pushing
+            the format forward.
+          </p>
+        </div>
       </section>
 
       {/* Field notes preview */}
       <section className="bg-graphite px-8 py-24">
-        {/* TODO: heading + "view all" link + article preview grid */}
+        <h1 className="font-display text-display-2 uppercase text-sand mobile:text-[20vw]">
+          Field Notes
+        </h1>
+
+        <p className="mt-4 max-w-xl text-sand/70">
+          Dispatches from the workshop, gear brakdowns,
+          people using Northline in the field.
+        </p>
+
+        <div className="mt-4">
+          <Link
+            href="/field-notes"
+            className="font-display uppercase text-rust"
+          >
+            View All Field Notes
+          </Link>
+        </div>
+
+        <div className="mt-12 flex flex-col gap-12 md:flex-row">
+          <div className="flex-1">
+            <div className="h-64 overflow-hidden">
+              <ParallaxImage src="/field-notes/article1.jpg" alt="" />
+            </div>
+
+            <h3 className="mt-4 font-display text-2xl uppercase text-sand">
+              Why We Waterproof Everthing, Even the Cable Ports
+            </h3>
+
+            <Link href="/field-notes" className="mt-2 inline-block font-display uppercase text-rust">
+              Read More
+            </Link>
+          </div>
+
+          <div className="flex-1">
+            <div className="h.64 overflow-hidden">
+              <ParallaxImage src="/field-notes/article2.jpg" alt="" />
+            </div>
+
+            <h3 className="mt-4 font-display text-2xl uppercase text-sand">
+              Recording Wind Without Recording Wind Noise
+            </h3>
+
+            <Link href="/field-notes" className="mt-2 inline-block font-display uppercase text-rust">
+              Read More
+            </Link>
+          </div>
+        </div>
       </section>
 
       <Footer />
