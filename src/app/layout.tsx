@@ -23,7 +23,9 @@ export default function RootLayout({
       <body className="font-editorial">
         <SmoothScroll>
           <Menu />
-          <PageTransition>{children}</PageTransition>
+          <PageTransition>
+            {children}
+          </PageTransition>
         </SmoothScroll>
       </body>
     </html>

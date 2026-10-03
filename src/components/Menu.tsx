@@ -362,7 +362,7 @@ export default function Menu() {
 
             <div
               ref={menuPatternRef}
-              className="absolute left-0 top-0 h-full w-full bg-[repeating-linear-gradient(135deg,theme(colors.rust)_0px,theme(color.rust)_2px,transparent_2px,transparent_18px)]
+              className="absolute left-0 top-0 h-full w-full bg-[repeating-linear-gradient(135deg,theme(colors.rust)_0px,theme(colors.rust)_2px,transparent_2px,transparent_18px)]
               opacity-20 [clip-path:polygon(0%_0%,0%_0%,0%_100%,0%_100%)] will-change-[clip-path]"
             />
           </div>
@@ -400,6 +400,19 @@ export default function Menu() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            <div
+              ref={menuFooterRef}
+              className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col gap-1 text-center opacity-0 will-change-[opacity] mobile:w-[90]"
+            >
+              <p className="font-display text-2xl uppercase text-graphite">
+                Build for the field
+              </p>
+
+              <p className="text-graphite">
+                Recording tools for the real sound
+              </p>
             </div>
           </div>
         </div>
