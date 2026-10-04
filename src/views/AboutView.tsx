@@ -229,7 +229,7 @@ export default function AboutView() {
           </p>
         </div>
 
-        <div className="h-64 flex-1 overflow-hidden md:h-auto">
+        <div className="relative h-64 flex-1 overflow-hidden md:h-auto md:min-h-[400px]">
           <ParallaxImage src="/about/banner.jpg" alt="Northline workshop" />
         </div>
       </section>

@@ -39,12 +39,6 @@ import { useLenis } from 'lenis/react';
 const lerp = (start: number, end: number, factor: number) =>
   start + (end - start) * factor;
 
-// Posición absoluta de la imagen/contenedor dentro del documento (en píxeles).
-type Bounds = {
-  top: number;
-  height: number;
-};
-
 interface ParallaxImageProps {
   src: string;
   alt: string;
@@ -57,14 +51,11 @@ export default function ParallaxImage({
   src,
   alt,
   className = "",
-  speed = 0.15,
+  speed = 0.8,
   scale = 1.35,
 }: ParallaxImageProps) {
   // Referencia directa al <img> para modificar su style.transform sin re-render.
   const imageRef = useRef<HTMLImageElement | null>(null);
-
-  // Guarda la posición y altura de la imagen/contenedor en el documento.
-  const bounds = useRef<Bounds | null>(null);
 
   // Valor que realmente se aplica al transform en cada frame (suavizado).
   const currentTranslateY = useRef(0);
@@ -76,22 +67,7 @@ export default function ParallaxImage({
   const reftID = useRef<number | null>(null);
 
   useEffect(() => {
-    const updateBounds = () => {
-      if (imageRef.current) {
-        // Medimos el elemento contenedor padre para obtener las dimensiones reales
-        const container = imageRef.current.parentElement || imageRef.current;
-        const rect = container.getBoundingClientRect();
-        bounds.current = {
-          top: rect.top + window.scrollY,
-          height: rect.height,
-        };
-      }
-    };
-
-    updateBounds();
-    window.addEventListener("resize", updateBounds);
-
-    // Bucle de animación (~60fps).
+    // Bucle de animación (~60fps) con interpolación lineal (lerp).
     const animate = () => {
       if (imageRef.current) {
         currentTranslateY.current = lerp(
@@ -110,30 +86,39 @@ export default function ParallaxImage({
     animate();
 
     return () => {
-      window.removeEventListener("resize", updateBounds);
       if (reftID.current) {
         cancelAnimationFrame(reftID.current);
       }
     };
   }, [scale]);
 
-  // Callback de Lenis: calcula el desplazamiento en función de cuándo el elemento entra en pantalla.
-  useLenis(({ scroll }: { scroll: number }) => {
-    if (!bounds.current) return;
+  // Callback de Lenis: se ejecuta en cada evento de scroll y calcula el progreso visual en pantalla en tiempo real.
+  useLenis(() => {
+    if (!imageRef.current) return;
 
-    // Centro del viewport y centro del elemento en el documento
-    const viewportCenter = scroll + window.innerHeight / 2;
-    const elementCenter = bounds.current.top + bounds.current.height / 2;
+    const container = imageRef.current.parentElement || imageRef.current;
+    const rect = container.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    // Distancia relativa desde el centro de la pantalla al centro del elemento
-    const relativeScroll = viewportCenter - elementCenter;
+    // Si el elemento está completamente fuera de la pantalla, no calculamos
+    if (rect.bottom < -100 || rect.top > viewportHeight + 100) return;
 
-    // Margen máximo que permite el zoom (scale) sin dejar huecos visibles
-    const maxOffset = (bounds.current.height * (scale - 1)) / 2;
-    const rawOffset = relativeScroll * speed;
+    // Centro del viewport y centro del elemento en coordenadas de pantalla
+    const elementCenter = rect.top + rect.height / 2;
+    const viewportCenter = viewportHeight / 2;
 
-    // Limitamos (clamp) para asegurar que nunca se descubra el fondo del contenedor
-    targetTranslateY.current = Math.max(-maxOffset, Math.min(maxOffset, rawOffset));
+    // Distancia desde el centro del viewport al centro del elemento
+    const distFromCenter = viewportCenter - elementCenter;
+    const totalTravel = (viewportHeight + rect.height) / 2;
+
+    // Progreso normalizado entre -1 (entrando por abajo) y +1 (saliendo por arriba)
+    const progress = Math.max(-1, Math.min(1, distFromCenter / totalTravel));
+
+    // Margen máximo permitido por la escala de la imagen para nunca mostrar los bordes
+    const maxOffset = (rect.height * (scale - 1)) / 2;
+
+    // Desplazamiento objetivo suave y continuo a lo largo de todo el scroll
+    targetTranslateY.current = progress * maxOffset * speed;
   });
 
   return (

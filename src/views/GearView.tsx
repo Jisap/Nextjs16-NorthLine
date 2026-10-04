@@ -85,8 +85,29 @@ export default function GearView() {
 
       {/* Intro */}
       <section className="flex flex-col gap-8 bg-graphite px-8 py-24 md:flex-row">
-        <div className="flex-1">{/* TODO: heading + copy */}</div>
-        <div className="h-64 flex-1 overflow-hidden md:h-auto">
+        <div className="flex-1">
+          <h2 className="font-display text-display-2 uppercase text-sand mobile:text-[20vw]">
+            Built for
+            <br />
+            Extremes
+          </h2>
+
+          <p className="mt-6 font-display uppercase text-rust">
+            Recording gear that goes where the story is.
+          </p>
+
+          <div className="mt-8">
+            <p className="font-display uppercase text-rust">sale@northline.com</p>
+            <p className="text-rust/70">Founded 2026</p>
+          </div>
+
+          <p className="mt-8 max-w-md text-sand/70">
+            Northline builds field recorders and spatial-capture software engineered for conditions
+            that would damage studio-grade gear, supporting researchers, sound designers, and location crews.
+          </p>
+        </div>
+
+        <div className="relative h-64 flex-1 overflow-hidden md:h-auto md:min-h-[400px]">
           <ParallaxImage src="/gear/banner.jpg" alt="Northline field recorder in use" />
         </div>
       </section>
@@ -125,7 +146,7 @@ export default function GearView() {
       {/* Closing */}
       <section className="flex flex-col gap-8 bg-graphite px-8 py-24 md:flex-row">
         <div className="flex-1">{/* TODO: heading + copy */}</div>
-        <div className="h-64 flex-1 overflow-hidden md:h-auto">
+        <div className="relative h-64 flex-1 overflow-hidden md:h-auto md:min-h-[400px]">
           <ParallaxImage src="/gear/banner2.jpg" alt="Northline gear in the field" />
         </div>
       </section>
