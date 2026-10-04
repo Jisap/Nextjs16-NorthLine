@@ -7,7 +7,7 @@ export default function Footer() {
         <ParallaxImage src="/footer/footer.jpg" alt="" />
       </div>
 
-      <div className="flex justify-between gap-8 bg-graphite px-8 pb-16 mobile:flex-col">
+      <div className="flex justify-between gap-8 bg-graphite px-8 pb-16 pt-16 mobile:flex-col">
         <div>
           <p className="text-sand">Have Question</p>
           <h3 className="text-sand">Get in Touch</h3>

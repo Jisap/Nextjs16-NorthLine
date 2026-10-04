@@ -1,23 +1,60 @@
+import Link from "next/link";
 import Footer from "@/components/Footer";
 import ParallaxImage from "@/components/ParallaxImage";
 
-// TODO: fill in the rest of the team.
+
 const TEAM = [
   {
-    name: "Name",
-    role: "Role",
+    name: "Mara Ostrom",
+    role: "Co-Founder & CEO",
     img: "/about/team1.jpg",
-    bio: "Bio placeholder.",
+    bio: "Mara spent a decade recording wildlife audio in the field before founding Northline.",
+  },
+  {
+    name: "Devin Smith",
+    role: "Chief Engineer",
+    img: "/about/team2.jpg",
+    bio: "Devin leads hardware design, with a background ruggedized electronics for fleld instruments.",
+  },
+  {
+    name: "Priya Nair",
+    role: "Head of Field Testing",
+    img: "/about/team3.jpg",
+    bio: "Priya runs Northline's test program, takin prototypes through deserts costalines.",
+  },
+  {
+    name: "Sam Whitfield",
+    role: "Director of Partnerships",
+    img: "/about/team4.jpg",
+    bio: "Sam works with universities, research stations, and studios to make sure Northline.",
   },
 ];
 
-// TODO: fill in the rest of the principles.
+
 const PRINCIPLES = [
   {
     number: "01.",
-    title: "Title",
-    kicker: "Kicker",
-    body: "Body copy placeholder.",
+    title: "Built to Survice the Trip",
+    kicker: "Durabilit Ins't Optional",
+    body: "Every product goes through the same conditions it's rated for before it ships - sandstorms, tropical humidity, freezing cold, and the occasional drop.",
+  },
+  {
+    number: "02.",
+    title: "Designed With the People Who Use It",
+    kicker: "Field Testing, No Focus Groups",
+    body: "Our test program puts prototypes in the hands of working recordists for months.",
+  },
+  {
+    number: "03.",
+    title: "Open Formats, No Lock-In",
+    kicker: "Your Recordings Are Yours",
+    body: "Northline gear exports to standar formats with no propietary lock-in - recording workflow should always be open",
+  },
+  {
+    number: "04.",
+    title: "Repairable by Design",
+    kicker: "Built to Be Fixed, Not Replaced",
+    body: "Every unit ships with a repair guide and parts diagram",
   },
 ];
 
@@ -27,7 +64,18 @@ export default function AboutView() {
       {/* Hero */}
       <section className="relative h-[70vh] w-full overflow-hidden">
         <ParallaxImage src="/about/hero.jpg" alt="" />
-        {/* TODO: headline, supporting line */}
+
+        <div className="absolute bottom-16 left-8">
+          <h1 className="font-display text-display-1 uppercase text-sand mobile:text-[24vw]">
+            Our Story
+          </h1>
+        </div>
+
+        <div className="absolute bottom-8 right-8 max-w-sm text-right text-sand">
+          <p>
+            Designing recording tools thar survive the field, not just the lab.
+          </p>
+        </div>
       </section>
 
       {/* Sign-up + mission intro */}
