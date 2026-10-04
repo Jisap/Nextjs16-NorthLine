@@ -74,14 +74,12 @@ export default function FieldNotesView() {
             Northline builds field-tested recording hardware and spatial-capture software,
             with transparent design decisions and repair-first approach to gear that lasts.
           </p>
-
         </div>
 
         <div className="h-64 flex-1 overflow-hidden md:h-auto">
           <ParallaxImage src="/field-notes/banner.jpg" alt="Northline in the field" />
         </div>
       </section>
-
       <Footer />
     </div>
   );
