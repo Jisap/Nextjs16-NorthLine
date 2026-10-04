@@ -114,10 +114,27 @@ export default function GearView() {
 
       {/* Feature list */}
       <section className="bg-sand px-4 py-24 text-graphite">
+        <div className="mx-auto flex max-w-4xl flex-col gap-2 md:flex-row">
+          <div className="flex-1">
+            <h3 className="font-display uppercase">Field Recorder</h3>
+          </div>
+
+          <div className="flex-1">
+            <h3 className="font-display uppercase">Northline SDK</h3>
+          </div>
+        </div>
+
         <div className="mx-auto mt-12 flex max-w-4xl flex-col gap-8">
           {FEATURES.map((f) => (
             <div key={f.number} className="flex flex-col gap-2 border-t border-graphite/20 pt-6 md:flex-row md:gap-12">
-              {/* TODO: number/title + body layout */}
+              <div className="flex gap-3 md:w-1/4">
+                <p className="font-display uppercase">{f.number}</p>
+                <p className="font-display uppercase">{f.title}</p>
+              </div>
+
+              <div className="md:w-3/4">
+                <p>{f.body}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -128,24 +145,76 @@ export default function GearView() {
         <div className="absolute inset-0 opacity-40">
           <ParallaxImage src="/gear/callout-bg.jpg" alt="" />
         </div>
-        <div className="relative max-w-xl">{/* TODO: heading + copy */}</div>
+
+        <div className="relative max-w-xl">
+          <h2 className="font-display text-display-2 uppercase text-sand mobile:text-[20vw]">
+            Reliable
+            <br />
+            in the Field
+            <br />
+            and Beyond
+          </h2>
+
+          <p className="mt-6 text-sand/70">
+            Be part of a growing community of recordists, researchers, and location crews who need gear that doesn&rsquo;t quit when
+            the conditions get hard.
+          </p>
+
+          <p className="mt-6 text-sand/70">
+            Mos consumer recording gear is designed for a desk. Northline gear is designed for a trip you can&rsquo;t reschedule &mdash;
+            built to keep capturing when the weather, the terrain, or the timeline won&rsquo;t cooperate.
+          </p>
+        </div>
       </section>
 
       {/* Support */}
-      <section className="bg-graphite px-8 py-24">{/* TODO: heading + copy */}</section>
+      <section className="bg-graphite px-8 py-24">
+
+      </section>
 
       {/* Capabilities */}
       <section className="flex flex-col gap-12 bg-graphite px-8 pb-24 md:flex-row">
         {CAPABILITIES.map((c) => (
           <div key={c.index} className="flex-1">
-            {/* TODO: index, title, feature lines */}
+            <p className="text-sand/70">{c.index}</p>
+
+            <h3 className="mt-2 font-display uppercase text-sand">{c.title}</h3>
+
+            <div className="mt-4 flex flex-col gap-1">
+              {c.lines.map((line) => (
+                <p key={line} className="text-sand/70">
+                  {line}
+                </p>
+              ))}
+            </div>
           </div>
         ))}
       </section>
 
       {/* Closing */}
       <section className="flex flex-col gap-8 bg-graphite px-8 py-24 md:flex-row">
-        <div className="flex-1">{/* TODO: heading + copy */}</div>
+        <div className="flex-1">
+          <h2 className="font-display text-display-2 uppercase text-sand mobile:text-[20vw]">
+            Shaping
+            <br />
+            Tomorrow&rsquo;s Field Kit
+          </h2>
+
+          <p className="mt-4 font-display uppercase text-rust">
+            Gear built with the people who use it.
+          </p>
+
+          <div className="mt-8">
+            <p className="font-display uppercase text-rust">gear@northline.com</p>
+            <p className="text-sand/70">Founded 2026</p>
+          </div>
+
+          <p className="mt-8 max-w-md text-sand">
+            Northline designs field-tested recording hardware and software, built with the researchers
+            and recordist who use it, so gear keeps working where it matters most.
+          </p>
+        </div>
+
         <div className="relative h-64 flex-1 overflow-hidden md:h-auto md:min-h-[400px]">
           <ParallaxImage src="/gear/banner2.jpg" alt="Northline gear in the field" />
         </div>
