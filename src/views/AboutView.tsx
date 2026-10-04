@@ -167,7 +167,23 @@ export default function AboutView() {
 
       {/* Marquee */}
       <section className="w-full overflow-hidden whitespace-nowrap bg-rust py-1">
-        {/* TODO: two-copy flex row, animate-marquee, seamless loop */}
+        <div className="flex w-max animate-marquee [animation-duration:80s]">
+          {/* Se renderizan 2 veces lo mismo */}
+          {[0, 1, 2, 3].map((copy) => (
+            <div key={copy} className="flex shrink-0">
+              {["Built to Survive", "Real Sound", "No Compromise"].map(
+                (phrase) => (
+                  <h1
+                    key={`${copy} - {${phrase}`}
+                    className="mr-12 inline-block font-display text-6xl uppercase text-graphite"
+                  >
+                    {phrase}
+                  </h1>
+                )
+              )}
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Principles */}
