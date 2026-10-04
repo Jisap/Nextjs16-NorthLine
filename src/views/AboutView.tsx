@@ -84,9 +84,40 @@ export default function AboutView() {
           <div className="h-64 overflow-hidden bg-sand">
             <ParallaxImage src="/about/sign-up-card.jpg" alt="" />
           </div>
-          {/* TODO: heading + copy + CTA */}
+
+          <h3 className="mt-6 font-display uppercase text-sand">
+            Get early access to new gear drops
+          </h3>
+
+          <p className="mt-2">
+            Every Voice From the Field Count
+          </p>
+
+          <button className="mt-6 !bg-rust px-6 py-3">
+            <Link href="/contact" className="font-display uppercase text-graphite">
+              Sign Up
+            </Link>
+          </button>
         </div>
-        <div className="flex-1">{/* TODO: mission copy + CTA */}</div>
+
+        <div className="flex-1">
+          <h3 className="font-display uppercase text-sand">
+            We build for people who record outside a studio, and we design every product to survive getting there.
+          </h3>
+
+          <p className="mt-6 text-sand/70">
+            At Northline, we make recording tools for field conditions: researchers, sound designers, and crews who need
+            gear that keeps working after the studio-grade equipment would have failed. We partner with universities and
+            acoustic programs to test new hardware in the field, and we build every product around one question &mdash;
+            wil this still work after the trip out there ?
+          </p>
+
+          <button className="mt-6 !bg-rust px-6 py-3">
+            <Link href="/contact" className="font-display uppercase text-graphite">
+              Sign Up
+            </Link>
+          </button>
+        </div>
       </section>
 
       {/* Team */}
@@ -95,14 +126,39 @@ export default function AboutView() {
           <ParallaxImage src="/about/team-bg.jpg" alt="" />
         </div>
         <div className="relative">
-          {/* TODO: heading + careers card */}
+          <h3 className="font-display text-3xl uppercase text-sand">
+            The Northline
+          </h3>
+
+          <h1 className="font-display text-display-2 uppercase text-rust mobile:text-[20vw]">
+            Team
+          </h1>
+
+          <div className="mt-8 max-w-md bg-sand p-6 text-graphite">
+            <h3 className="font-display uppercase">Be Part of Our Journey</h3>
+            <p className="mt-2">
+              Northline runs lean and hands-on &mdash; everyone here has actually taken ger into the field.
+            </p>
+            <button className="mt-4 !bg-rust px-5 py-3">
+              <Link href="/contact" className="font-display uppercase text-graphite">
+                Careers
+              </Link>
+            </button>
+          </div>
+
           <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-2">
             {TEAM.map((member) => (
               <div key={member.name} className="flex flex-col gap-4">
                 <div className="h-96 overflow-hidden">
                   <ParallaxImage src={member.img} alt={`Portrait of ${member.name}`} />
                 </div>
-                {/* TODO: name, role, bio, link */}
+
+                <div>
+                  <h3 className="font-display uppercase text-sand">{member.name}</h3>
+                  <p className="text-sand/70">{member.role}</p>
+                  <p className="text-sand/70">{member.bio}</p>
+                  <Link href="/contact" className="font-display uppercase text-rust">Linkedin</Link>
+                </div>
               </div>
             ))}
           </div>

@@ -39,28 +39,31 @@ import { useLenis } from 'lenis/react';
 const lerp = (start: number, end: number, factor: number) =>
   start + (end - start) * factor;
 
-// Posición absoluta de la imagen dentro del documento (en píxeles).
-// top: distancia desde el inicio de la página hasta el borde superior.
-// bottom: idem hasta el borde inferior (aquí se guarda pero no se usa,
-//   se deja por si se quiere optimizar y no animar fuera de pantalla).
-type Bounds = { top: number; bottom: number; };
+// Posición absoluta de la imagen/contenedor dentro del documento (en píxeles).
+type Bounds = {
+  top: number;
+  height: number;
+};
 
-export default function ParallaxImage({
-  src, // URL de la imagen a mostrar
-  alt, // Texto alternativo (accesibilidad + SEO)
-}: {
+interface ParallaxImageProps {
   src: string;
   alt: string;
-}) {
-  // Se usan refs (no useState) porque estos valores cambian en CADA frame
-  // (~60 veces/segundo). Con state re-renderizaríamos el componente 60fps,
-  // con refs solo mutamos el DOM directamente, mucho más performante.
+  className?: string;
+  speed?: number;
+  scale?: number;
+}
 
+export default function ParallaxImage({
+  src,
+  alt,
+  className = "",
+  speed = 0.15,
+  scale = 1.35,
+}: ParallaxImageProps) {
   // Referencia directa al <img> para modificar su style.transform sin re-render.
   const imageRef = useRef<HTMLImageElement | null>(null);
 
-  // Guarda la posición inicial de la imagen en el documento. Se calcula una
-  // vez al montar + en cada resize (si cambia el layout).
+  // Guarda la posición y altura de la imagen/contenedor en el documento.
   const bounds = useRef<Bounds | null>(null);
 
   // Valor que realmente se aplica al transform en cada frame (suavizado).
@@ -69,90 +72,77 @@ export default function ParallaxImage({
   // Valor al que QUEREMOS llegar, calculado desde el scroll de Lenis.
   const targetTranslateY = useRef(0);
 
-  // ID del requestAnimationFrame activo, para poder cancelarlo al desmontar
-  // el componente y evitar fugas de memoria.
+  // ID del requestAnimationFrame activo.
   const reftID = useRef<number | null>(null);
 
-  // Efecto principal: medir posición + arrancar el bucle de animación.
-  // Se ejecuta solo una vez al montar ([]) porque el bucle es continuo.
   useEffect(() => {
-
-    const updateBounds = () => {                                         // Calcula dónde está la imagen en coordenadas absolutas del documento.
-      if (imageRef.current) {                                            // Solo si el <img> ya existe en el DOM
-        const rect = imageRef.current.getBoundingClientRect()            // getBoundingClientRect da posición relativa al VIEWPORT...  
+    const updateBounds = () => {
+      if (imageRef.current) {
+        // Medimos el elemento contenedor padre para obtener las dimensiones reales
+        const container = imageRef.current.parentElement || imageRef.current;
+        const rect = container.getBoundingClientRect();
         bounds.current = {
-          top: rect.top + window.scrollY,                                // ...por eso se suma window.scrollY para convertirla a posición
-          bottom: rect.bottom + window.scrollY,                          // absoluta respecto al inicio del documento.
-        }
+          top: rect.top + window.scrollY,
+          height: rect.height,
+        };
       }
-    }
+    };
 
-    updateBounds();                                                      // Medición inicial
+    updateBounds();
+    window.addEventListener("resize", updateBounds);
 
-    window.addEventListener("resize", updateBounds);                     // Si la ventana cambia de tamaño, la imagen puede moverse -> re-medir.
-
-    // Bucle de animación ejecutado ~60 veces por segundo.
+    // Bucle de animación (~60fps).
     const animate = () => {
       if (imageRef.current) {
-        currentTranslateY.current = lerp(                                // Acerca el valor actual al objetivo un 10% por frame (suavizado).
+        currentTranslateY.current = lerp(
           currentTranslateY.current,
           targetTranslateY.current,
           0.1
         );
 
-        // Solo toca el DOM si la diferencia es perceptible (>0.01px).
-        // Evita aplicar transforms innecesarios cuando está quieto.
         if (Math.abs(currentTranslateY.current - targetTranslateY.current) > 0.01) {
-          // Aplica el desplazamiento + el zoom de seguridad (scale 1.5).
-          imageRef.current.style.transform = `translateY(${currentTranslateY.current}px) scale(1.5)`;
+          imageRef.current.style.transform = `translateY(${currentTranslateY.current}px) scale(${scale})`;
         }
       }
-      // Programa el siguiente frame -> bucle infinito hasta desmontar.
       reftID.current = requestAnimationFrame(animate);
-    }
+    };
 
-    animate(); // Arranca el bucle
+    animate();
 
-    // Limpieza al desmontar: quitar listener y parar el bucle.
     return () => {
       window.removeEventListener("resize", updateBounds);
       if (reftID.current) {
         cancelAnimationFrame(reftID.current);
       }
-    }
-  }, []);
+    };
+  }, [scale]);
 
-  // Callback de Lenis: se ejecuta en cada evento de scroll suave.
-  // NO anima directamente, solo actualiza el VALOR OBJETIVO.
-  // El bucle `animate` de arriba se encargará de alcanzarlo poco a poco.
+  // Callback de Lenis: calcula el desplazamiento en función de cuándo el elemento entra en pantalla.
   useLenis(({ scroll }: { scroll: number }) => {
-    if (!bounds.current) return; // Aún no se ha medido la imagen
+    if (!bounds.current) return;
 
-    // Distancia recorrida desde que el scroll pasó por el top de la imagen.
-    // Negativa si aún no hemos llegado, positiva si ya la pasamos.
-    const relativeScroll = scroll - bounds.current.top;
+    // Centro del viewport y centro del elemento en el documento
+    const viewportCenter = scroll + window.innerHeight / 2;
+    const elementCenter = bounds.current.top + bounds.current.height / 2;
 
-    // Solo usamos el 20% de ese recorrido -> la imagen "se retrasa"
-    // respecto al scroll = efecto parallax.
-    targetTranslateY.current = relativeScroll * 0.2;
-  })
+    // Distancia relativa desde el centro de la pantalla al centro del elemento
+    const relativeScroll = viewportCenter - elementCenter;
 
+    // Margen máximo que permite el zoom (scale) sin dejar huecos visibles
+    const maxOffset = (bounds.current.height * (scale - 1)) / 2;
+    const rawOffset = relativeScroll * speed;
 
+    // Limitamos (clamp) para asegurar que nunca se descubra el fondo del contenedor
+    targetTranslateY.current = Math.max(-maxOffset, Math.min(maxOffset, rawOffset));
+  });
 
   return (
-    // El padre debe tener `overflow-hidden` y una altura fija para que el
-    // efecto se vea como una ventana por la que se desplaza la imagen.
     <img
       ref={imageRef}
       src={src}
       alt={alt}
-      // h-full w-full object-cover: rellena el contenedor recortando.
-      // will-change-transform: avisa al navegador que el transform animará,
-      // así lo optimiza en la GPU y evita parpadeos.
-      className="h-full w-full object-cover will-change-transform"
-      // Estado inicial: sin desplazamiento pero ya con zoom 1.5 para que
-      // no haya un salto visual en el primer frame de la animación.
-      style={{ transform: "translateY(0) scale(1.5)" }}
+      className={`h-full w-full object-cover will-change-transform ${className}`}
+      style={{ transform: `translateY(0) scale(${scale})` }}
     />
-  )
+  );
 }
