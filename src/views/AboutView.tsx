@@ -191,7 +191,15 @@ export default function AboutView() {
         <div className="mx-auto flex max-w-4xl flex-col gap-12">
           {PRINCIPLES.map((p) => (
             <div key={p.number} className="flex flex-col gap-4 md:flex-row md:gap-12">
-              {/* TODO: number/title + kicker/body layout */}
+              <div className="flex gap-4 md:w-1/2">
+                <h3 className="font-display uppercase">{p.number}</h3>
+                <h3 className="font-display uppercase">{p.title}</h3>
+              </div>
+
+              <div className="md:w-1/2">
+                <p className="font-display uppercase">{p.kicker}</p>
+                <p className="mt-2">{p.body}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -199,7 +207,28 @@ export default function AboutView() {
 
       {/* Location */}
       <section className="flex flex-col gap-8 bg-graphite px-8 py-24 md:flex-row">
-        <div className="flex-1">{/* TODO: wordmark, address, contact info */}</div>
+        <div className="flex-1">
+          <h2 className="font-display text-display-2 upperacase text-sand mobile:text-[20vw]">
+            North
+            <br />
+            line
+          </h2>
+
+          <p className="mt-4 font-display uppercase text-rust">
+            118 Foundry Row, Porland, OR 97209, USA
+          </p>
+
+          <div className="mt-8">
+            <p className="font-display uppercase text-rust">hello@northline.com</p>
+            <p className="text-sand/70">Established 2026</p>
+          </div>
+
+          <p className="mt-8 max-w-md text-sand/70">
+            Northline designs field recorders and spatial-capture software, built and tested for the
+            consditions real fieldwork actually happens in.
+          </p>
+        </div>
+
         <div className="h-64 flex-1 overflow-hidden md:h-auto">
           <ParallaxImage src="/about/banner.jpg" alt="Northline workshop" />
         </div>
